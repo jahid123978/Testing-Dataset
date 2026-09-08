@@ -35,12 +35,12 @@ The result is sent back to the mobile application and presented to the user. The
 
 ### What this dataset is
 
-This is a small, curated collection of **24 PCB images** drawn from two well-known public PCB inspection benchmarks:
+This is a small, curated collection of **16 PCB images** drawn from two well-known public PCB inspection benchmarks:
 
 | Source folder | Images | Type of imagery |
 |---|---|---|
 | `DeepPCB/` | 12 | Binarized (black-and-white) PCB trace images, aligned and cropped |
-| `HRIPCB/` | 12 | High-resolution colour photographs of bare PCBs |
+| `HRIPCB/` | 4 | High-resolution colour photographs of a bare PCB |
 
 The two folders deliberately represent **two very different imaging conditions**. `DeepPCB` images are small, pre-processed, single-channel images of circuit traces. `HRIPCB` images are large, full-colour photographs of a complete board captured with an industrial camera. Testing on both makes it possible to check whether the system behaves consistently across image scales, colour formats, and file sizes.
 
@@ -145,15 +145,7 @@ Testing Dataset/
 │   ├── 01_missing_hole_01.jpg
 │   ├── 01_missing_hole_02.jpg
 │   ├── 01_missing_hole_03.jpg
-│   ├── 01_missing_hole_04.jpg
-│   ├── 01_mouse_bite_01.jpg
-│   ├── 01_mouse_bite_02.jpg
-│   ├── 01_mouse_bite_03.jpg
-│   ├── 01_mouse_bite_04.jpg
-│   ├── 01_open_circuit_01.jpg
-│   ├── 01_open_circuit_02.jpg
-│   ├── 01_open_circuit_03.jpg
-│   └── 01_open_circuit_04.jpg
+│   └── 01_missing_hole_04.jpg
 └── README.md
 ```
 
@@ -162,7 +154,7 @@ Testing Dataset/
 - There are **no sub-folders inside `DeepPCB/` or `HRIPCB/`**. The images sit directly in each folder.
 - There are **no label, annotation, or metadata files** anywhere in the dataset.
 - The folders are **not** organised into per-class sub-directories. In `HRIPCB/`, the defect class is carried by the filename instead.
-- Total: 24 images, approximately 17 MB (`DeepPCB/` ≈ 468 KB, `HRIPCB/` ≈ 17 MB).
+- Total: 16 images, approximately 6 MB (`DeepPCB/` ≈ 468 KB, `HRIPCB/` ≈ 5.5 MB).
 
 ---
 
@@ -170,15 +162,13 @@ Testing Dataset/
 
 ### Categories confirmed in `HRIPCB/`
 
-The `HRIPCB` filenames explicitly name the defect type. Three categories are present, with four images each:
+The `HRIPCB` filenames explicitly name the defect type. **One category is present in this testing set**, represented by four images:
 
 | Defect category | Filename token | Images | What the defect represents |
 |---|---|---|---|
 | **Missing hole** | `missing_hole` | 4 | A drilled hole (a via or a component mounting hole) that should exist on the board is absent. Components cannot be mounted correctly and intended connections between layers may not be formed. |
-| **Mouse bite** | `mouse_bite` | 4 | A small, rounded notch bitten out of the edge of a copper track, resembling a bite mark. The conductor becomes locally thinner, which raises resistance and creates a weak point that can fail later under current or mechanical stress. |
-| **Open circuit** | `open_circuit` | 4 | A copper track is broken or interrupted, so the conductive path is cut. The two ends that should be connected are electrically isolated and the circuit does not function. |
 
-> **Note:** The full HRIPCB benchmark defines additional defect classes beyond these three. Only the three categories listed above appear in this testing subset. If the deployed model supports further classes, they are simply not exercised by these particular images.
+> **Note:** The full HRIPCB benchmark defines additional defect classes beyond this one. Only *missing hole* appears in this testing subset. If the deployed model supports further classes, they are simply not exercised by these particular images, and testing against those classes would require additional images from the source benchmark.
 
 ### Categories in `DeepPCB/`
 
@@ -198,12 +188,12 @@ Defect classes supported by the deployed model: `[Add information here]`
 | Property | `DeepPCB/` | `HRIPCB/` |
 |---|---|---|
 | File format | JPEG (`.jpg`) | JPEG (`.jpg`) |
-| Number of images | 12 | 12 |
+| Number of images | 12 | 4 |
 | Resolution | 640 × 640 pixels (all images) | 3034 × 1586 pixels (all images) |
 | Colour | Single-channel grayscale, except `00041003_test.jpg`, which is stored as 3-channel | 3-channel RGB colour |
 | Visual content | Binarized black-and-white circuit traces | Photograph of a bare green PCB with copper tracks, pads, and drilled holes |
 | File size range | ≈ 16 KB – 74 KB | ≈ 1.42 MB per image (uniform) |
-| Folder size | ≈ 468 KB | ≈ 17 MB |
+| Folder size | ≈ 468 KB | ≈ 5.5 MB |
 | Colour depth | 8-bit precision | 8-bit precision |
 | Camera metadata | None (JFIF, 96 × 96 DPI density) | EXIF present; captured with an OSEE H1600 camera |
 | Annotation files | None | None |
@@ -227,11 +217,11 @@ The identifiers fall into three numeric groups — `00041xxx`, `12000xxx`, and `
 01_missing_hole_01.jpg
 └┬┘ └─────┬────┘ └┬┘
  │        │       └── sample number for that board/defect combination (01–04)
- │        └────────── defect type (missing_hole | mouse_bite | open_circuit)
+ │        └────────── defect type (missing_hole in this testing set)
  └─────────────────── board identifier (all images here are board 01)
 ```
 
-All 12 `HRIPCB` images come from the same board (`01`), photographed with three different defect types, four samples each.
+All four `HRIPCB` images come from the same board (`01`) and show the same defect type (*missing hole*), as four separate samples numbered `01` to `04`.
 
 ### Per-file listing
 
@@ -252,13 +242,14 @@ All 12 `HRIPCB` images come from the same board (`01`), photographed with three 
 | `12100002_test.jpg` | 34.5 KB |
 | `12100003_test.jpg` | 30.3 KB |
 
-**`HRIPCB/` — 3034 × 1586 px, ≈ 1.42 MB each**
+**`HRIPCB/` — 3034 × 1586 px**
 
-| Filenames | Expected defect (from filename) |
-|---|---|
-| `01_missing_hole_01.jpg` … `01_missing_hole_04.jpg` | Missing hole |
-| `01_mouse_bite_01.jpg` … `01_mouse_bite_04.jpg` | Mouse bite |
-| `01_open_circuit_01.jpg` … `01_open_circuit_04.jpg` | Open circuit |
+| Filename | Size | Expected defect (from filename) |
+|---|---|---|
+| `01_missing_hole_01.jpg` | 1.42 MB | Missing hole |
+| `01_missing_hole_02.jpg` | 1.42 MB | Missing hole |
+| `01_missing_hole_03.jpg` | 1.42 MB | Missing hole |
+| `01_missing_hole_04.jpg` | 1.42 MB | Missing hole |
 
 ### Annotation information
 
@@ -327,15 +318,15 @@ The app displays whether a defect was found on the submitted board. If the model
 
 **Step 7 — View the defect class**
 
-For each detection, the predicted defect category is shown (for example *missing hole*, *mouse bite*, or *open circuit*).
+For each detection, the predicted defect category is shown. For every `HRIPCB` image in this testing set the expected category is *missing hole*.
 
-For `HRIPCB` images, compare this against the defect type in the filename. For example, `01_open_circuit_02.jpg` should be classified as an open circuit.
+Compare the predicted class against the defect type in the filename. For example, `01_missing_hole_03.jpg` should be classified as a missing hole.
 
 **Step 8 — View the localized defect region**
 
 The app shows where on the board the defect was found, typically by overlaying a marked region or bounding box on the image.
 
-Check that the marked region actually sits on a plausible defect — a broken track for an open circuit, a notched track edge for a mouse bite, a missing pad hole for a missing hole. Because no ground-truth coordinates are supplied with this dataset, this check is visual.
+Check that the marked region actually sits on a plausible defect. For the `HRIPCB` images this means a pad that lacks its drilled hole, while the surrounding pads are correctly drilled. Because no ground-truth coordinates are supplied with this dataset, this check is visual.
 
 **Step 9 — Interpret the final inspection result**
 
